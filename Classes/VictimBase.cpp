@@ -1,5 +1,7 @@
 #include "VictimBase.h"
 #include "LevelScene.h"
+#include "BulletBase.h"
+#include "TowerBase.h"
 
 USING_NS_CC;
 
@@ -32,9 +34,9 @@ void VictimBase::updateLifeBar()
     lifeBarFg->setPercentage(100 - percentage);
 }
 
-void VictimBase::debuff(float duration)
-{
-}
+//void VictimBase::debuff(float duration)
+//{
+//}
 
 void VictimBase::onExit()
 {
@@ -64,7 +66,8 @@ bool VictimBase::init(const string& plist_path, const string& name, int frame_cn
 
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Items/Items02-hd.plist");
     particleFrames.clear();
-    for (int i = 1; i <= 5; ++i)particleFrames.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(StringUtils::format("air0%d.png", i)));
+    for (int i = 1; i <= 5; ++i)
+        particleFrames.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(StringUtils::format("air0%d.png", i)));
 
     return true;
 }
@@ -79,4 +82,27 @@ bool VictimBase::setTaunt(Touch* touch, Event* event)
         return true;
     }
     return false;
+}
+
+void VictimBase::die()
+{
+    isdead = true;
+    //for (auto bullet = subscribedBullets.begin(); bullet < subscribedBullets.end(); ++bullet) {
+    //    (*bullet)->setTarget(NullVictim::getInstance());
+    //}
+}
+
+//void VictimBase::subscribeBullet(BulletBase* bullet)
+//{
+//    subscribedBullets.pushBack(bullet);
+//}
+
+bool VictimBase::isInRange(TowerBase* tower)
+{
+    return trueLP > 0 && getPosition().distance(tower->getPosition()) < tower->getRange();
+}
+
+bool VictimBase::isValid()
+{
+    return !isdead;
 }

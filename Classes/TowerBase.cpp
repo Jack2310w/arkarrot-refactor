@@ -13,7 +13,7 @@ bool TowerBase::init(const string& towerName)
 	if (!_Base::init(towerInfo.plist_path, towerInfo.name, towerInfo.frame_cnt)) {
 		return false;
 	}
-	target = nullptr;
+	target = NullVictim::getInstance();
 	level = 1;
 	schedule(CC_CALLBACK_1(TowerBase::update, this), 1.0f / 30, "tower_update");
 	return true;
@@ -37,20 +37,7 @@ void TowerBase::setTarget(VictimBase* target)
 
 bool TowerBase::aim(float dt)
 {
-	if (target == nullptr)return false;
-	Vec2 targetPos = target->getPosition(), myPos = getPosition();
-	float targetAngle = int(CC_RADIANS_TO_DEGREES((targetPos - myPos).getAngle()) + 360) % 360, pointingAngle = getPointingAngle();
-	if (abs(targetAngle - pointingAngle) < towerInfo.rotate_speed * dt) {
-		setPointingAngle(targetAngle);
-		return true;
-	}
-	else if ((targetAngle < pointingAngle && pointingAngle - targetAngle < 180) || (targetAngle > pointingAngle && targetAngle - pointingAngle > 180)) {
-		setPointingAngle(pointingAngle - towerInfo.rotate_speed * dt);
-	}
-	else {
-		setPointingAngle(pointingAngle + towerInfo.rotate_speed * dt);
-	}
-	return false;
+	return target->isValid();
 }
 
 void TowerBase::fire()
@@ -63,13 +50,16 @@ void TowerBase::fire()
 void TowerBase::update(float dt)
 {
 	auto taunted = LevelScene::getInstance()->getTauntedTarget();
-	if (taunted != nullptr && taunted->trueLP > 0 && taunted->getPosition().distance(getPosition()) < towerInfo.range) {
+	if (taunted->isInRange(this)) {
 		target = taunted;
 	}
 	else {
-		if (target == nullptr || target->trueLP == 0 || target->getPosition().distance(getPosition()) > towerInfo.range)target = nullptr;
+		if (!target->isInRange(this))
+			target = NullVictim::getInstance();
 		for (auto monster : LevelScene::getInstance()->getMonsters()) {
-			if (monster->getPosition().distance(getPosition()) <= towerInfo.range && monster->trueLP > 0 && (target == nullptr || static_cast<Monster*>(target)->distance < monster->distance))target = monster;
+			if (monster->isInRange(this) && (!target->isValid() ||
+				static_cast<Monster*>(target)->distance < monster->distance))
+				target = monster;
 		}
 	}
 	timeToFire = std::max(0.0f, timeToFire - dt);
@@ -84,4 +74,9 @@ float TowerBase::getPointingAngle() const
 void TowerBase::setPointingAngle(float angle)
 {
 	setRotation(90 - angle);
+}
+
+int TowerBase::getRange() const
+{
+	return towerInfo.range;
 }

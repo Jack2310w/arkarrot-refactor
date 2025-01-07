@@ -3,6 +3,7 @@
 #include "CommonDefines.h"
 #include "VisibleBase.h"
 #include "VictimBase.h"
+#include "NullVictim.h"
 #include "Monster.h"
 #include "SoundFx.h"
 
@@ -34,6 +35,7 @@ protected:
 public:
 	const VictimBase* getTarget()const;
 	void setTarget(VictimBase* target);
+	int getRange() const; 
 
 	//关于瞄准和开火，自动行为，不可调用
 private:

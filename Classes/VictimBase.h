@@ -1,8 +1,10 @@
 #pragma once 
-#include "CommonDefines.h";
+#include "CommonDefines.h"
 #include "VisibleBase.h"
 
 class LevelScene;
+class TowerBase;
+class BulletBase;
 
 class VictimBase :public VisibleBase {
 public:
@@ -10,21 +12,25 @@ public:
 	bool init(const string& plist_path, const string& name, int frame_cnt);
 	bool setTaunt(cocos2d::Touch* touch, cocos2d::Event* event);
 
-	bool preHit(int damage);
-	bool getHit(int damage);
+	virtual bool preHit(int damage);
+	virtual bool getHit(int damage);
 	void updateLifeBar();
+	virtual bool isInRange(TowerBase* tower);
+	virtual bool isValid();
+	//void subscribeBullet(BulletBase* bullet);
 
-	virtual void debuff(float duration);
+	//virtual void debuff(float duration);
 
 	cocos2d::ProgressTimer* lifeBarFg;
 	int maxLP;
 	int visibleLP;
 	int trueLP;
 
-	virtual void die() = 0;
+	virtual void die();
 	bool isdead = false;
 
 	cocos2d::Vector<cocos2d::SpriteFrame*> particleFrames;
+	//cocos2d::Vector<BulletBase*> subscribedBullets;
 
 	cocos2d::EventListenerTouchOneByOne* touchListener;
 

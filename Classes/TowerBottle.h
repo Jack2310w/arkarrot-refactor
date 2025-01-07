@@ -1,7 +1,6 @@
 #pragma once
 #include "CommonDefines.h"
 #include "TowerBase.h"
-#include "BulletBottle.h"
 
 class TowerBottle :public TowerBase {
 private:
@@ -20,6 +19,6 @@ public:
     };
 
 	bool init();
-
 	void generateBullet() override;
+    bool aim(float dt) override;
 };

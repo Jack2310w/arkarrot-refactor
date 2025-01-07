@@ -85,40 +85,7 @@ bool LevelScene::init(int lvl)
 	auto objects = tmxMap->getObjectGroup("objects");
 	for (const auto& object : objects->getObjects())
 	{
-		float x = object.asValueMap().at("x").asFloat();
-		float y = object.asValueMap().at("y").asFloat();
-		string type = object.asValueMap().at("type").asString();
-		if (type == "object1x1")
-		{
-			x += side_length / 2;
-			y += side_length / 2;
-			regionStates[y / 80][x / 80] = OBJECT;
-		}
-		else if (type == "object1x2")
-		{
-			x += side_length;
-			y += side_length / 2;
-			regionStates[y / 80][x / 80] = OBJECT;
-			regionStates[y / 80][x / 80 - 1] = OBJECT;
-		}
-		else if (type == "object2x1")
-		{
-			x += side_length / 2;
-			y += side_length;
-			regionStates[y / 80][x / 80] = OBJECT;
-			regionStates[y / 80 - 1][x / 80] = OBJECT;
-		}
-		else
-		{
-			x += side_length;
-			y += side_length;
-			regionStates[y / 80][x / 80] = OBJECT;
-			regionStates[y / 80 - 1][x / 80] = OBJECT;
-			regionStates[y / 80][x / 80 - 1] = OBJECT;
-			regionStates[y / 80 - 1][x / 80 - 1] = OBJECT;
-		}
-		auto newObject = Object::create(object.asValueMap().at("name").asString());
-		newObject->setPosition(x, y);
+		auto newObject = ObjectComponent::create(object);
 		addChild(newObject, 1);
 	}
 
@@ -169,7 +136,7 @@ bool LevelScene::init(int lvl)
 		[&](float dt) {
 			gotoNextWave();
 		}, 1.0f, "start next wave");
-	tauntedTarget = nullptr;
+	tauntedTarget = NullVictim::getInstance();
 
 	//≤®¥Œœ‘ æ
 	waveLabel = cocos2d::Label::createWithTTF("wave: 1", "numFont/Pacifico-Regular.ttf", 30);

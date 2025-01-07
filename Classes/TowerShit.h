@@ -1,7 +1,6 @@
 #pragma once
 #include "CommonDefines.h"
 #include "TowerBase.h"
-#include "BulletShit.h"
 
 class LevelScene;
 
@@ -24,6 +23,4 @@ public:
     bool init();
 
     void generateBullet() override;
-
-    bool aim(float dt)override;
 };
